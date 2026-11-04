@@ -42,7 +42,7 @@ base = alt.Chart(plot).encode(x=alt.X("date:T", title=None))
 band = base.mark_area(opacity=0.18, color="#2a78d6").encode(y=alt.Y("lower:Q", title=unit, axis=alt.Axis(format="~s")), y2="upper:Q")
 actual = base.mark_line(color="#1f2937", strokeWidth=2).encode(y="actual:Q", tooltip=[alt.Tooltip("date:T"), alt.Tooltip("actual:Q", format=",.0f")])
 pred = base.mark_line(color="#2a78d6", strokeDash=[6, 4], strokeWidth=2.5).encode(y="forecast:Q", tooltip=[alt.Tooltip("date:T"), alt.Tooltip("forecast:Q", format=",.0f")])
-st.altair_chart((band + actual + pred).properties(height=380), use_container_width=True)
+st.altair_chart((band + actual + pred).properties(height=380), width="stretch")
 
 fut = fc[fc["forecast"].notna()]
 last_actual = series.iloc[-period:].sum() if len(series) >= period else series.sum()
@@ -54,7 +54,7 @@ if next_sum == next_sum:
     m3.metric("Next 12 months vs last 12" if period == 12 else "Next 4 quarters vs last 4", f"{100 * (next_sum / last_actual - 1):+.1f}%")
 
 with st.expander("Forecast table"):
-    st.dataframe(fut.round(0), use_container_width=True)
+    st.dataframe(fut.round(0), width="stretch")
 
 if st.button("AI commentary for the CFO"):
     facts = (f"Series: {choice}. Last 6 actuals: {', '.join(f'{v:,.0f}' for v in series.tail(6))} {unit}. "

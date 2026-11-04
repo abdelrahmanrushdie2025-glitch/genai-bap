@@ -34,11 +34,11 @@ with left:
     reasons.columns = ["reason", "alerts"]
     st.altair_chart(alt.Chart(reasons).mark_bar(color="#d64545").encode(
         x="alerts:Q", y=alt.Y("reason:N", sort="-x", title=None), tooltip=["reason", "alerts"]).properties(height=260),
-        use_container_width=True)
+        width="stretch")
 with right:
     st.subheader("Detection rate by issue type")
     rt = [{"issue type": k, "detected %": v} for k, v in ev["recall_by_type"].items()]
-    st.dataframe(rt, hide_index=True, use_container_width=True)
+    st.dataframe(rt, hide_index=True, width="stretch")
 
 st.subheader("Review queue")
 f1, f2 = st.columns(2)
@@ -49,7 +49,7 @@ q = flags[flags["risk_score"] >= min_score]
 if sel:
     q = q[q["reasons"].apply(lambda r: any(s in r for s in sel))]
 show = ["txn_id", "txn_date", "business_unit", "category", "counterparty", "amount_eur", "payment_method", "risk_score", "reasons"]
-st.dataframe(q[show], use_container_width=True, hide_index=True,
+st.dataframe(q[show], width="stretch", hide_index=True,
              column_config={"risk_score": st.column_config.ProgressColumn("risk", min_value=0, max_value=1, format="%.2f"),
                             "amount_eur": st.column_config.NumberColumn("amount (EUR)", format="%.2f")})
 st.download_button("Download review queue (CSV)", q[show].to_csv(index=False), "anomaly_review_queue.csv", "text/csv")

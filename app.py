@@ -51,7 +51,7 @@ chart = alt.Chart(monthly).mark_line(point=False, strokeWidth=2.5).encode(
     color=alt.Color("account_type:N", title=None, scale=alt.Scale(domain=["Revenue", "Expense"], range=["#2a78d6", "#e8803a"])),
     tooltip=[alt.Tooltip("month:T", format="%b %Y"), "account_type", alt.Tooltip("amount_eur:Q", format=",.0f")],
 ).properties(height=320)
-st.altair_chart(chart, use_container_width=True)
+st.altair_chart(chart, width="stretch")
 
 ydf = df[df["txn_date"].dt.year == year]
 left, right = st.columns(2)
@@ -62,7 +62,7 @@ with left:
         x=alt.X("amount_eur:Q", title="EUR", axis=alt.Axis(format="~s")),
         y=alt.Y("business_unit:N", sort="-x", title=None),
         tooltip=["business_unit", alt.Tooltip("amount_eur:Q", format=",.0f")]).properties(height=300),
-        use_container_width=True)
+        width="stretch")
 with right:
     st.subheader("Expenses by category")
     cat = ydf[ydf["account_type"] == "Expense"].groupby("category")["amount_eur"].sum().reset_index()
@@ -70,7 +70,7 @@ with right:
         x=alt.X("amount_eur:Q", title="EUR", axis=alt.Axis(format="~s")),
         y=alt.Y("category:N", sort="-x", title=None),
         tooltip=["category", alt.Tooltip("amount_eur:Q", format=",.0f")]).properties(height=300),
-        use_container_width=True)
+        width="stretch")
 
 st.subheader("What this platform does")
 a, b, c, d = st.columns(4)

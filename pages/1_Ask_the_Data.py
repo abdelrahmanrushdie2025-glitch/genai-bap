@@ -41,9 +41,9 @@ def render(res: nl2sql.QueryResult):
     if not res.df.empty:
         ch = auto_chart(res.df)
         if ch is not None:
-            st.altair_chart(ch, use_container_width=True)
+            st.altair_chart(ch, width="stretch")
         with st.expander(f"Result table ({len(res.df)} rows)"):
-            st.dataframe(res.df, use_container_width=True, hide_index=True)
+            st.dataframe(res.df, width="stretch", hide_index=True)
     if res.sql:
         with st.expander("SQL executed (read-only)"):
             st.code(res.sql, language="sql")
@@ -56,7 +56,7 @@ st.markdown("**Try a question:**")
 cols = st.columns(3)
 clicked = None
 for i, q in enumerate(nl2sql.SUGGESTED_QUESTIONS):
-    if cols[i % 3].button(q, key=f"sugg{i}", use_container_width=True):
+    if cols[i % 3].button(q, key=f"sugg{i}", width="stretch"):
         clicked = q
 
 for item in st.session_state.chat:
