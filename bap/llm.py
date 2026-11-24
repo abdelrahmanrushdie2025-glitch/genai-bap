@@ -45,7 +45,9 @@ def _secret(name: str, default: str | None = None) -> str | None:
 
 
 def api_key() -> str | None:
-    return _secret("GEMINI_API_KEY")
+    key = _secret("GEMINI_API_KEY")
+    # tolerate copy-paste artefacts: spaces, line breaks, stray quotes
+    return key.strip().strip('"').strip("'").strip() if key else key
 
 
 def model_name() -> str:
@@ -113,8 +115,14 @@ def generate(prompt: str, system: str = "", max_tokens: int = 700,
                     time.sleep(4)
                     continue
                 raise LLMUnavailable(last_err)
-            if r.status_code in (400, 403) and "API key" in r.text:
-                raise LLMUnavailable("The Gemini API key was rejected - check the key in Secrets.")
+            if r.status_code in (400, 401, 403) and ("API key" in r.text or "API_KEY" in r.text):
+                try:
+                    err = r.json().get("error", {})
+                    reason = f"{err.get('status', r.status_code)}: {err.get('message', '')[:160]}"
+                except ValueError:
+                    reason = f"HTTP {r.status_code}"
+                print(f"[GenAI-BAP] Gemini key rejected - {reason}", flush=True)
+                raise LLMUnavailable(f"The Gemini API key was rejected ({reason}). Check the key in Secrets.")
             if r.status_code == 404:  # model not available -> try next
                 last_err = f"model {m} not found"
                 break
